@@ -34,10 +34,16 @@ class RedisTTLAwareAdapter extends RedisAdapter
     public function getItem($key)
     {
         $item = parent::getItem($key);
-        $ttl  = $this->redis->ttl($key);
-        if ($ttl > 0) {
-            $item->expiresAfter($ttl);
+
+        if ($item->isHit()) {
+
+            $ttl  = $this->redis->ttl($key); // Retrieve original expiration time
+
+            if ($ttl > 0) {
+                $item->expiresAfter($ttl);
+            }
         }
+
         return $item;
     }
 
